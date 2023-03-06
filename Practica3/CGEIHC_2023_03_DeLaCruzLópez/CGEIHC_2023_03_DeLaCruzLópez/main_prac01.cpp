@@ -1,7 +1,7 @@
 /*---------------------------------------------------------*/
-/* ----------------   Pr·ctica 3 --------------------------*/
+/* ----------------   Pr√°ctica 3 --------------------------*/
 /*-----------------    2023-2   ---------------------------*/
-/*-------Alumno: De La Cruz LÛpez Carlos Odette							 --------------*/
+/*-------Alumno: De La Cruz L√≥pez Carlos Odette							 --------------*/
 /*-------Cuenta: 317121423                         ------------------*/
 #include <glew.h>
 #include <glfw3.h>
@@ -31,7 +31,7 @@ void getResolution(void);
 //For Keyboard //Para el teclado
 	float	movX = 0.0f, //Definimos las siguientes variables
 			movY = 0.0f,
-			movZ = 0.0f,
+			movZ = -3.0f,//Profundidad hacia dentro del monitor, positivo ser√≠a hacia fuera del monitor
 			rotY = 0.0f;
 
 
@@ -196,11 +196,11 @@ int main()
 	// create transformations and Projection
 	glm::mat4 modelOp = glm::mat4(1.0f);		// initialize Matrix, Use this matrix for individual models
 	glm::mat4 viewOp = glm::mat4(1.0f);			//Use this matrix for ALL models
-	glm::mat4 projectionOp = glm::mat4(1.0f);	//This matrix is for Projection /*Esto es una matriz de proyecciÛn y se le envia la matriz unitaria*/
+	glm::mat4 projectionOp = glm::mat4(1.0f);	//This matrix is for Projection /*Esto es una matriz de proyecci√≥n y se le envia la matriz unitaria*/
 
 	//Use "projection" in order to change how we see the information
 	projectionOp = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);/*Es el limite de lo que podemos ver(el ultimo valor en este caso es 100.00), nos dice que podemos ver 100 unidades a lo lejos*/
-	//projectionOp = glm::ortho(-5.0f, 5.0f, -3.0f, 3.0f, 0.1f, 10.0f);/*Definiremos como veremos nuestra proyecciÛn, se le asigna una proyecciÛn ortogonal (existe tambien la de perspectiva), la ortogonal nos funciona para trabajar en modelado en 2d, se puede usar para interfaz de usuario*//*Ortogonal(X_izquierda,X_derecha, Y_inferior, Y_superior, Z_minima, Z_maxima)*/
+	//projectionOp = glm::ortho(-5.0f, 5.0f, -3.0f, 3.0f, 0.1f, 10.0f);/*Definiremos como veremos nuestra proyecci√≥n, se le asigna una proyecci√≥n ortogonal (existe tambien la de perspectiva), la ortogonal nos funciona para trabajar en modelado en 2d, se puede usar para interfaz de usuario*//*Ortogonal(X_izquierda,X_derecha, Y_inferior, Y_superior, Z_minima, Z_maxima)*/
 
 	// render loop
 	// While the windows is not closed
@@ -215,35 +215,75 @@ int main()
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		//Mi funciÛn de dibujo
+		//Mi funci√≥n de dibujo
 		/*******************************************/
 		//Use "view" in order to affect all models
-		viewOp = glm::translate(glm::mat4(1.0f), glm::vec3(movX, movY, movZ));/*Toma como referencia el origen y a partir del objeto movera el objeto a la ubicaciÛn*//* Matriz que maneja la vista "de mundo" o "coordenadas globales", afectara todos los elementos en pantalla, esta aplicacion una transformaciÛn de traslaciÛn*/
-		viewOp = glm::rotate(viewOp, glm::radians(rotY),glm::vec3(0.0f, 1.0f, 0.0f));/*viewOp = glm::rotate(conserva lo que tenias anteriormente, enviaremos valores en radianes(este mismo lo convertiremos grados a radianes, haremos que gire con respecto a Y))*///Esta transformaciÛn ser· una rotaciÛn
+		viewOp = glm::translate(glm::mat4(1.0f), glm::vec3(movX, movY, movZ));/*Toma como referencia el origen y a partir del objeto movera el objeto a la ubicaci√≥n*//* Matriz que maneja la vista "de mundo" o "coordenadas globales", afectara todos los elementos en pantalla, esta aplicacion una transformaci√≥n de traslaci√≥n*/
+		viewOp = glm::rotate(viewOp, glm::radians(rotY),glm::vec3(0.0f, 1.0f, 0.0f));/*viewOp = glm::rotate(conserva lo que tenias anteriormente, enviaremos valores en radianes(este mismo lo convertiremos grados a radianes, haremos que gire con respecto a Y))*///Esta transformaci√≥n ser√° una rotaci√≥n
 		// pass them to the shaders
 		myShader.setMat4("model", modelOp);
 		myShader.setMat4("view", viewOp);
 		// note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
 		myShader.setMat4("projection", projectionOp);
 
+		//Solo limpiamos el escenario
+		glBindVertexArray(VAO[1]);	//Enable data array [1]	/*	Se le aplicara funciones de dise√±o	*/
+		//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO[1]); //Only if we are going to work with index
 
-		glBindVertexArray(VAO[1]);	//Enable data array [1]	/*	Se le aplicara funciones de diseÒo	*/
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO[1]); //Only if we are going to work with index
-
-		modelOp = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-		myShader.setMat4("model", modelOp);
+		//modelOp = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+		//myShader.setMat4("model", modelOp);
 		//glDrawArrays(GL_LINE_LOOP, 0, 8); //My C
-		glDrawElements(GL_TRIANGLE_FAN, 6, GL_UNSIGNED_INT, (void*)(0 * sizeof(float)));	//to Draw using index
-		glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_INT, (void*)(6 * sizeof(float)));	//to Draw using index
-
+		//glDrawElements(GL_TRIANGLE_FAN, 6, GL_UNSIGNED_INT, (void*)(0 * sizeof(float)));	//to Draw using index
+		//glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_INT, (void*)(6 * sizeof(float)));	//to Draw using index
+		
 
 		/*-------------------Second figure-------------------*/
 		glBindVertexArray(VAO[0]);	//Enable data array [0] //Activamos el contenedor 0
-		modelOp = glm::translate(glm::mat4(1.0f), glm::vec3(7.0f, 0.0f, 0.0f));/*Estamos ubicando la posiciÛon del cubo*/
+		modelOp = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));/*Estamos ubicando la posici√≥on del cubo*/
 		myShader.setMat4("model", modelOp);
+		myShader.setVec3("miColor", glm::vec3(0.8f, 0.25f, 0.0f));
 		glDrawArrays(GL_TRIANGLES, 0, 36); //My Cube //Dibujamos el cubo
 
-		glBindVertexArray(0);
+		modelOp = glm::translate(glm::mat4(1.0f),glm::vec3(1.0f,0.0f,0.0f));
+		myShader.setMat4("model",modelOp);
+		glDrawArrays(GL_TRIANGLES,0,36);//My cube
+		
+		/*Esta versi√≥n, crea un segundo cuadro, tomando como referencia al origen(el primer elemento)
+		modelOp = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 0.0f));
+		myShader.setMat4("model", modelOp);
+		glDrawArrays(GL_TRIANGLES, 0, 36);//My cube
+		*/
+		//Esta versi√≥n, crea el mismo cuadro que las 3 lineas anteriores, pero tomando en cuenta como referencia el modelo anterior
+		modelOp = glm::translate(modelOp, glm::vec3(1.0f, 0.0f, 0.0f));
+		myShader.setMat4("model", modelOp);
+		//myShader.setVec3("miColor",glm::vec3(0.0f,1.0f,0.0f));
+		glDrawArrays(GL_TRIANGLES, 0, 36);//My cube
+		
+
+		modelOp = glm::translate(modelOp, glm::vec3(1.0f, 0.0f, 0.0f));
+		myShader.setMat4("model", modelOp);
+		//myShader.setVec3("miColor",glm::vec3(0.0f,1.0f,0.0f));
+		glDrawArrays(GL_TRIANGLES, 0, 36);//My cube
+		
+
+		modelOp = glm::translate(modelOp, glm::vec3(1.0f, 0.0f, 0.0f));
+		myShader.setMat4("model", modelOp);
+		//myShader.setVec3("miColor",glm::vec3(0.0f,1.0f,0.0f));
+		glDrawArrays(GL_TRIANGLES, 0, 36);//My cube
+		
+
+		modelOp = glm::translate(modelOp, glm::vec3(1.0f, 0.0f, 0.0f));
+		myShader.setMat4("model", modelOp);
+		//myShader.setVec3("miColor",glm::vec3(0.0f,1.0f,0.0f));
+		glDrawArrays(GL_TRIANGLES, 0, 36);//My cube
+
+		modelOp = glm::translate(modelOp, glm::vec3(0.0f, -1.0f, 0.0f));
+		myShader.setMat4("model", modelOp);
+		myShader.setVec3("miColor", glm::vec3(1.0f, 1.0f, 0.0f));
+		glDrawArrays(GL_TRIANGLES, 0, 36);//My cube
+		//glBindVertexArray(0); Lo usare al finalizar mi figura
+
+		
 		/*****************************************************************/
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
@@ -263,21 +303,21 @@ void my_input(GLFWwindow* window)/*Atrapa los eventos del teclado, una vez que g
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)  //GLFW_RELEASE
 		glfwSetWindowShouldClose(window, true);
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)//Cada que detecta que se presiona la tecla A, genera la acciÛn en IF
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)//Cada que detecta que se presiona la tecla A, genera la acci√≥n en IF
 		movX -= 0.1f;//En el caso de ser afirmativo, lo que hara es decrementar el valor X para movernos a la izquierda
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)//Cada que detecta que se presiona la tecla A, genera la acciÛn en IF
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)//Cada que detecta que se presiona la tecla A, genera la acci√≥n en IF
 		movX += 0.1f;//En el caso de ser afirmativo, lo que hara es decrementar el valor X para movernos a la derecha
-	if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN) == GLFW_PRESS)//Cada que detecta que se presiona la tecla A, genera la acciÛn en IF
+	if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN) == GLFW_PRESS)//Cada que detecta que se presiona la tecla A, genera la acci√≥n en IF
 		movY -= 0.1f;//En el caso de ser afirmativo, lo que hara es decrementar el valor X para movernos a la derecha
-	if (glfwGetKey(window, GLFW_KEY_PAGE_UP) == GLFW_PRESS)//Cada que detecta que se presiona la tecla A, genera la acciÛn en IF
+	if (glfwGetKey(window, GLFW_KEY_PAGE_UP) == GLFW_PRESS)//Cada que detecta que se presiona la tecla A, genera la acci√≥n en IF
 		movY += 0.1f;//En el caso de ser afirmativo, lo que hara es decrementar el valor X para movernos a la derecha
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)//Cada que detecta que se presiona la tecla A, genera la acciÛn en IF
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)//Cada que detecta que se presiona la tecla A, genera la acci√≥n en IF
 		movZ -= 0.1f;
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)//Cada que detecta que se presiona la tecla A, genera la acciÛn en IF
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)//Cada que detecta que se presiona la tecla A, genera la acci√≥n en IF
 		movZ += 0.1f;
-	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)//Cada que detecta que se presiona la tecla A, genera la acciÛn en IF
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)//Cada que detecta que se presiona la tecla A, genera la acci√≥n en IF
 		rotY -= 10.0f;
-	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)//Cada que detecta que se presiona la tecla A, genera la acciÛn en IF
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)//Cada que detecta que se presiona la tecla A, genera la acci√≥n en IF
 		rotY += 10.0f;
 }
 
